@@ -67,6 +67,11 @@ class ArchivableFilesFinder extends \FilterIterator
                 }
                 return !$exclude;
             })
+            ->filter(function (\SplFileInfo $file) {
+                // Exclude files containing multibyte characters which are mishandled by Phar
+                $name = $file->getBasename();
+                return mb_strlen($name, 'latin1') === mb_strlen($name, 'utf8');
+            })
             ->ignoreVCS(true)
             ->ignoreDotFiles(false);
 
